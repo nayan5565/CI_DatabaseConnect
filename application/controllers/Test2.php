@@ -93,9 +93,13 @@ class Test2 extends CI_Controller{
             }
        }
        function jsonData(){
-           $response=array('status'=>'success',
-                    'user_name'=>'$user_name',
-                    'pass_word'=>'$password');
-                print_r(json_encode($response));
+           $this->db->select('*');
+         $object = $this->db->get("object"); 
+           $querys = $this->db->get("nayantb"); 
+           $result2=$object->result();
+           $result=$querys->result();
+          $total=array('object'=>$result2,
+              'data'=>$result);
+                print_r(json_encode($total));
        }
 }
