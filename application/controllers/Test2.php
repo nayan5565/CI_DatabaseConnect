@@ -86,10 +86,16 @@ class Test2 extends CI_Controller{
                     'user_name'=>$user_name,
                     'pass_word'=>$password);
                 print_r(json_encode($response));
-            }
- else {
+            }else {
                  $response=array('status'=>'failer');
                 print_r(json_encode($response));
-}
+                
+            }
+       }
+       function jsonData(){
+           $response=array('status'=>'success',
+                    'user_name'=>'$user_name',
+                    'pass_word'=>'$password');
+                print_r(json_encode($response));
        }
 }
