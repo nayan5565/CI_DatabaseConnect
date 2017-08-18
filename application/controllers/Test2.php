@@ -13,7 +13,11 @@ class Test2 extends CI_Controller {
         //load database library      
         $this->load->database();
         //load Model Model_db.php
-        $this->load->model('Model_db');
+        $this->load->model('Model_api');
+    }
+    
+    function test(){
+        echo 'for test';
     }
 
     // get current time of Asia zone
@@ -147,17 +151,77 @@ class Test2 extends CI_Controller {
                 array_push($errors, "password is required");
                 echo 'password did not match is required';
             }
-            if (count($errors)==0) {
-                 $data = array('username' => $username, 'firstname' => $firstname, 'lastname' => $lastname, 'password' => $password, 'confirmpassword' => $confirmpassword, 'email' => $email);
-            $insert = $this->db->insert('user', $data);
-            if ($insert > 0) {
-                echo 'successfully added';
-            } else {
-                echo 'not inserted';
+            if (count($errors) == 0) {
+                $data = array('username' => $username, 'firstname' => $firstname, 'lastname' => $lastname, 'password' => $password, 'confirmpassword' => $confirmpassword, 'email' => $email);
+                $insert = $this->db->insert('user', $data);
+                if ($insert > 0) {
+                    echo 'successfully added';
+                } else {
+                    echo 'not inserted';
+                }
             }
-            }
-           
-        } 
+        }
+    }
+
+    function login() {
+
+        $username = $this->input->post("username");
+        $password = $this->input->post("password");
+        $this->db->select('*');
+        $this->db->from('user');
+        $this->db->where('username', $username);
+        $this->db->where('password', $password);
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            echo 'sucess';
+        } else {
+            echo 'wrong username or password';
+        }
+    }
+
+    public function regist_api() {
+       
+        $json = $this->input->post('reg');
+      
+        $data = json_decode($json);
+  
+        $last_id = $this->Model_api->isRegistration($data);
+ 
+        
+        //-1 : email,phone,nid anyone  exists
+        // 1 : all new
+        // 0: insert err
+
+        if ($last_id > 0) {
+            $response = array('status' => 'success',
+                'user_id' => $last_id);
+            print_r(json_encode($response));
+        } else {
+            $response = array('status' => 'failed');
+            print_r(json_encode($response));
+        }
+    }
+    
+    function login_api(){
+        $user = $this->input->post('username');
+        $pass = $this->input->post('pass');
+        $user_id = $this->Model_api->isLogin($user,$pass);
+         if ($user_id > 0) {
+            //exits
+            $response = array(
+                'status' => 'success',
+                'user_id' => $user_id,
+                'access_token' => 'default'
+            );
+            print_r(json_encode($response));
+        } else {
+            //dont exist
+            $response = array(
+                'status' => 'failed',
+                'access_token' => 'no'
+            );
+            print_r(json_encode($response));
+        }
     }
 
 }
